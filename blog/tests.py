@@ -38,8 +38,6 @@ class BlogPostModelTest(TestCase):
         self.user.delete()
         self.assertEqual(BlogPost.objects.count(), 0)
 
-    from django.urls import reverse
-
 
 class BlogViewsTest(TestCase):
     def setUp(self):
@@ -60,14 +58,18 @@ class BlogViewsTest(TestCase):
         response = self.client.get(reverse("post_detail", args=[self.post.id]))
         self.assertEqual(response.status_code, 200)
 
+    def test_post_detail_shows_post_content(self):
+        response = self.client.get(reverse("post_detail", args=[self.post.id]))
+        self.assertContains(response, "View test post")
+
     def test_post_create_get_shows_form(self):
         response = self.client.get(reverse("post_create"))
-        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<form")
 
     def test_post_create_post_saves_new_post(self):
         response = self.client.post(reverse("post_create"), {
             "title": "New post via form",
             "content": "Form content",
         })
-        self.assertEqual(response.status_code, 302)  # redirect後
+        self.assertRedirects(response, reverse("post_list"))
         self.assertTrue(BlogPost.objects.filter(title="New post via form").exists())

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from .models import BlogPost
 
 
@@ -22,6 +23,11 @@ def post_create(request):
         content = request.POST.get("content")
         # TODO: replace with request.user once login is implemented
         author = User.objects.first()
+        if author is None:
+            return HttpResponse(
+                "No users exist yet. Create a user via createsuperuser first.",
+                status=400,
+            )
         BlogPost.objects.create(title=title, content=content, author=author)
         return redirect("post_list")
     return render(request, "blog/post_form.html")
