@@ -1,0 +1,16 @@
+cat > blog/templates/blog/post_list.html << 'EOF'
+<h1>Blog posts</h1>
+
+<a href="{% url 'post_create' %}">Write a new post</a>
+
+<ul>
+  {% for post in posts %}
+    <li>
+      <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+      — {{ post.author.username }} — {{ post.created_date|date:"Y-m-d H:i" }}
+    </li>
+  {% empty %}
+    <li>No posts yet.</li>
+  {% endfor %}
+</ul>
+EOF
