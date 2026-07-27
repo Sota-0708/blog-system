@@ -1,0 +1,16 @@
+<a href="{% url 'post_list' %}">Back to all posts</a>
+
+<h1>Write a new post</h1>
+
+<form method="post">
+  {% csrf_token %}
+  <p>
+    <label>Title:</label><br>
+    <input type="text" name="title" required>
+  </p>
+  <p>
+    <label>Content:</label><br>
+    <textarea name="content" rows="6" required></textarea>
+  </p>
+  <button type="submit">Publish</button>
+</form>
