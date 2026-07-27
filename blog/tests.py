@@ -28,3 +28,11 @@ class BlogPostModelTest(TestCase):
         )
         posts = list(BlogPost.objects.all())
         self.assertEqual(posts[0], second_post)  # 新しい方が先頭
+        
+    def test_related_name(self):
+        self.assertEqual(self.user.posts.count(), 1)
+        self.assertEqual(self.user.posts.first(), self.post)
+
+    def test_delete_user_deletes_posts(self):
+        self.user.delete()
+        self.assertEqual(BlogPost.objects.count(), 0)
