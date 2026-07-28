@@ -1,7 +1,13 @@
-<a href="{% url 'post_list' %}">Back to all posts</a>
+{% extends "blog/base.html" %}
+{% block title %}Write a new post{% endblock %}
+{% block content %}
+<a href="{% url 'post_list' %}">&larr; Back to all posts</a>
+
 <h1>Write a new post</h1>
+
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Publish</button>
 </form>
+{% endblock %}

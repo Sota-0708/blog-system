@@ -1,7 +1,12 @@
-<a href="{% url 'post_list' %}">Back to all posts</a>
+{% extends "blog/base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<a href="{% url 'post_list' %}">&larr; Back to all posts</a>
+
 <h1>Register</h1>
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Register</button>
 </form>
+{% endblock %}
