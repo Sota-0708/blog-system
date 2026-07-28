@@ -117,3 +117,20 @@ class BlogFormsTest(TestCase):
         response = self.client.get(reverse("post_list"), {"q": "django"})
         self.assertContains(response, "Django tips")
         self.assertNotContains(response, "Cooking recipes")
+
+class HtmxSearchTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="htmxtester", password="pass123")
+        BlogPost.objects.create(title="Django tips", content="x", author=self.user)
+        BlogPost.objects.create(title="Cooking recipes", content="y", author=self.user)
+
+    def test_post_search_returns_partial_html(self):
+        response = self.client.get(reverse("post_search"), {"q": "django"})
+        self.assertContains(response, "Django tips")
+        self.assertNotContains(response, "Cooking recipes")
+        self.assertNotContains(response, "<html")  # partial only, not a full page
+
+    def test_post_search_empty_query_returns_all(self):
+        response = self.client.get(reverse("post_search"), {"q": ""})
+        self.assertContains(response, "Django tips")
+        self.assertContains(response, "Cooking recipes")
