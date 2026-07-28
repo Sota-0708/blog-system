@@ -46,7 +46,7 @@ pip install -r requirements.txt && python manage.py collectstatic --noinput && p
 4. Set the start command:
 
 ```bash
-gunicorn blog_system.wsgi
+gunicorn blog_system.wsgi --log-file -
 ```
 
 5. Add a PostgreSQL instance on Render (this automatically sets the `DATABASE_URL` environment variable).
@@ -64,5 +64,5 @@ export DEBUG=False
 export ALLOWED_HOSTS=localhost,127.0.0.1
 python manage.py collectstatic --noinput
 python manage.py migrate
-gunicorn blog_system.wsgi
+gunicorn blog_system.wsgi --log-file -
 ```
