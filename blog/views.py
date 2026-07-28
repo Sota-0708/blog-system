@@ -15,6 +15,7 @@ def post_list(request):
 
 
 def post_detail(request, post_id):
+    """Show a single blog post."""
     post = get_object_or_404(BlogPost, pk=post_id)
     return render(request, "blog/post_detail.html", {"post": post})
 
@@ -35,6 +36,7 @@ def post_create(request):
 
 
 def register(request):
+    """Show a registration form and create a new user account."""
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -47,6 +49,7 @@ def register(request):
 
 
 def login_view(request):
+    """Show a login form and authenticate the user."""
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -59,5 +62,6 @@ def login_view(request):
 
 
 def logout_view(request):
+    """Log the current user out."""
     logout(request)
     return redirect("post_list")
