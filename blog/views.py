@@ -14,6 +14,15 @@ def post_list(request):
     return render(request, "blog/post_list.html", {"posts": posts, "form": form})
 
 
+def post_search(request):
+    """Return only the post list partial, filtered by search query (used by HTMX)."""
+    form = SearchForm(request.GET)
+    posts = BlogPost.objects.all()
+    if form.is_valid() and form.cleaned_data["q"]:
+        posts = posts.filter(title__icontains=form.cleaned_data["q"])
+    return render(request, "blog/_post_list_items.html", {"posts": posts})
+
+
 def post_detail(request, post_id):
     """Show a single blog post."""
     post = get_object_or_404(BlogPost, pk=post_id)

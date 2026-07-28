@@ -3,19 +3,19 @@
 {% block content %}
 <h1>Blog posts</h1>
 
-<form method="get" role="search" aria-label="Search posts">
-  {{ form.as_p }}
-  <button type="submit">Search</button>
+<form role="search" aria-label="Search posts" onsubmit="return false;">
+  <label for="id_q">Search</label>
+  <input
+    type="text"
+    id="id_q"
+    name="q"
+    value="{{ form.q.value|default_if_none:'' }}"
+    hx-get="{% url 'post_search' %}"
+    hx-trigger="keyup changed delay:300ms, search"
+    hx-target="#post-list"
+    hx-swap="outerHTML"
+  >
 </form>
 
-<ul class="post-list">
-  {% for post in posts %}
-    <li>
-      <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
-      <div class="post-meta">{{ post.author.username }} — {{ post.created_date|date:"Y-m-d H:i" }}</div>
-    </li>
-  {% empty %}
-    <li>No posts found.</li>
-  {% endfor %}
-</ul>
+{% include "blog/_post_list_items.html" %}
 {% endblock %}
