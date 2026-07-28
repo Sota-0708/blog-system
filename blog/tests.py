@@ -14,7 +14,7 @@ class BlogPostModelTest(TestCase):
             content="Hello, world!",
             author=self.user,
         )
-
+        
     def test_str_representation(self):
         self.assertEqual(str(self.post), "My first post (testuser)")
 
@@ -45,6 +45,7 @@ class BlogViewsTest(TestCase):
         self.post = BlogPost.objects.create(
             title="View test post", content="Some content", author=self.user
         )
+        self.client.login(username="viewtester", password="pass123")
 
     def test_post_list_status_code(self):
         response = self.client.get(reverse("post_list"))
@@ -73,3 +74,46 @@ class BlogViewsTest(TestCase):
         })
         self.assertRedirects(response, reverse("post_list"))
         self.assertTrue(BlogPost.objects.filter(title="New post via form").exists())
+
+class BlogFormsTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="formtester", password="pass123")
+
+    def test_post_create_requires_login(self):
+        response = self.client.get(reverse("post_create"))
+        self.assertEqual(response.status_code, 302)  # redirect to login
+
+    def test_post_create_uses_logged_in_user_as_author(self):
+        self.client.login(username="formtester", password="pass123")
+        response = self.client.post(reverse("post_create"), {
+            "title": "Logged in post",
+            "content": "Some content",
+        })
+        self.assertRedirects(response, reverse("post_list"))
+        post = BlogPost.objects.get(title="Logged in post")
+        self.assertEqual(post.author, self.user)
+
+    def test_post_create_rejects_empty_title(self):
+        self.client.login(username="formtester", password="pass123")
+        response = self.client.post(reverse("post_create"), {
+            "title": "",
+            "content": "Some content",
+        })
+        self.assertEqual(response.status_code, 200)  # re-renders form with errors
+        self.assertFalse(BlogPost.objects.filter(content="Some content").exists())
+
+    def test_register_creates_user_and_logs_in(self):
+        response = self.client.post(reverse("register"), {
+            "username": "newuser",
+            "password1": "SuperSecret123",
+            "password2": "SuperSecret123",
+        })
+        self.assertRedirects(response, reverse("post_list"))
+        self.assertTrue(User.objects.filter(username="newuser").exists())
+
+    def test_search_filters_posts_by_title(self):
+        BlogPost.objects.create(title="Django tips", content="x", author=self.user)
+        BlogPost.objects.create(title="Cooking recipes", content="y", author=self.user)
+        response = self.client.get(reverse("post_list"), {"q": "django"})
+        self.assertContains(response, "Django tips")
+        self.assertNotContains(response, "Cooking recipes")

@@ -1,7 +1,7 @@
 <a href="{% url 'post_list' %}">Back to all posts</a>
-<h1>Write a new post</h1>
+<h1>Register</h1>
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">Publish</button>
+  <button type="submit">Register</button>
 </form>
